@@ -8,7 +8,7 @@ include $(MODEL_CHECK_DIR)/model_check.mk
 
 #library source files
 SRCDIR=$(PWD)/src
-DIRS=$(SRCDIR) $(SRCDIR)/datastore
+DIRS=$(SRCDIR) $(SRCDIR)/datastore $(SRCDIR)/index
 SOURCES=$(foreach d,$(DIRS),$(wildcard $(d)/*.c))
 STRIPPED_SOURCES=$(patsubst $(SRCDIR)/%,%,$(SOURCES))
 MODELDIR=$(PWD)/model
@@ -17,7 +17,7 @@ MODEL_MAKEFILES?= \
 
 #library test files
 TESTDIR=$(PWD)/test
-TESTDIRS=$(TESTDIR) $(TESTDIR)/datastore
+TESTDIRS=$(TESTDIR) $(TESTDIR)/datastore $(TESTDIR)/index
 TEST_BUILD_DIR=$(HOST_CHECKED_BUILD_DIR)/test
 TEST_DIRS=$(filter-out $(TESTDIR), \
     $(patsubst $(TESTDIR)/%,$(TEST_BUILD_DIR)/%,$(TESTDIRS)))
