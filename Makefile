@@ -8,7 +8,7 @@ include $(MODEL_CHECK_DIR)/model_check.mk
 
 #library source files
 SRCDIR=$(PWD)/src
-DIRS=$(SRCDIR)
+DIRS=$(SRCDIR) $(SRCDIR)/datastore
 SOURCES=$(foreach d,$(DIRS),$(wildcard $(d)/*.c))
 STRIPPED_SOURCES=$(patsubst $(SRCDIR)/%,%,$(SOURCES))
 MODELDIR=$(PWD)/model
@@ -17,7 +17,7 @@ MODEL_MAKEFILES?= \
 
 #library test files
 TESTDIR=$(PWD)/test
-TESTDIRS=$(TESTDIR)
+TESTDIRS=$(TESTDIR) $(TESTDIR)/datastore
 TEST_BUILD_DIR=$(HOST_CHECKED_BUILD_DIR)/test
 TEST_DIRS=$(filter-out $(TESTDIR), \
     $(patsubst $(TESTDIR)/%,$(TEST_BUILD_DIR)/%,$(TESTDIRS)))
@@ -57,6 +57,9 @@ HOST_RELEASE_OBJECTS= \
 #Dependencies
 GTEST_DIR?=../googletest/googletest
 GTEST_OBJ=$(TEST_BUILD_DIR)/gtest-all.o
+VPR_DIR?=../vpr
+VPR_INCLUDE=$(VPR_DIR)/include
+VPR_LINK=-L $(VPR_DIR)/build/host/release -lvpr
 
 #Toolchain location
 TOOLCHAIN_DIR?=/opt/vctoolchain
@@ -80,11 +83,11 @@ CORTEXMHARD_RELEASE_AR=$(TOOLCHAIN_DIR)/cortex-m4-hardfp/bin/arm-none-eabi-ar
 CORTEXMHARD_RELEASE_RANLIB=$(TOOLCHAIN_DIR)/cortex-m4-hardfp/bin/arm-none-eabi-ranlib
 
 #platform compiler flags
-COMMON_INCLUDES=$(MODEL_CHECK_INCLUDES) -I $(PWD)/include
+COMMON_INCLUDES=$(MODEL_CHECK_INCLUDES) -I $(PWD)/include -I $(VPR_INCLUDE)
 COMMON_CFLAGS=$(COMMON_INCLUDES) -Wall -Werror -Wextra
 HOST_CHECKED_CFLAGS=$(COMMON_CFLAGS) -fPIC -O0 -fprofile-arcs -ftest-coverage
 HOST_RELEASE_CFLAGS=$(COMMON_CFLAGS) -fPIC -O2
-COMMON_CXXFLAGS=-I $(PWD)/include -Wall -Werror -Wextra
+COMMON_CXXFLAGS=$(COMMON_INCLUDES) -I $(PWD)/include -Wall -Werror -Wextra
 HOST_CHECKED_CXXFLAGS=-std=c++14 $(COMMON_CXXFLAGS) -O0 -fprofile-arcs \
     -ftest-coverage
 HOST_RELEASE_CXXFLAGS=-std=c++14 $(COMMON_CXXFLAGS) -O2
@@ -190,6 +193,7 @@ $(TESTLIBVCDB): $(HOST_CHECKED_OBJECTS) $(TEST_OBJECTS) $(GTEST_OBJ)
 	$(HOST_RELEASE_CXX) $(TEST_CXXFLAGS) -fprofile-arcs \
 	    -o $@ $(TEST_OBJECTS) \
 	    $(HOST_CHECKED_OBJECTS) $(GTEST_OBJ) -lpthread \
+		$(VPR_LINK) \
 	    -L $(TOOLCHAIN_DIR)/host/lib64 -lstdc++
 
 model-check:
