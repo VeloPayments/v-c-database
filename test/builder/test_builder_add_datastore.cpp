@@ -1,5 +1,5 @@
 /**
- * \file test_builder_init.cpp
+ * \file test_builder_add_datastore.cpp
  *
  * \brief Test the vcdb_builder_add_datastore() method.
  *
