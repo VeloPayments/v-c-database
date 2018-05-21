@@ -37,6 +37,17 @@ TEST(builder_init, init)
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
         vcdb_builder_init(&builder, "TESTDB", "test-dir"));
 
+    /* The instance array can hold DEFAULT_INSTANCE_SIZE entries. */
+    EXPECT_EQ(20U, builder.instance_array_max);
+    /* The instance array currently has zero entries. */
+    EXPECT_EQ(0U, builder.instance_array_size);
+    /* The database is not opened. */
+    EXPECT_FALSE(builder.database_opened);
+    /* The builder engine is NOT null. */
+    EXPECT_NE(nullptr, builder.engine);
+    /* The connection string matches our connection string. */
+    EXPECT_STREQ("test-dir", builder.connection_string);
+
     /* dispose our structure. */
     dispose((disposable_t*)&builder);
 }
