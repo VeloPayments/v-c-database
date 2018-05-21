@@ -30,6 +30,18 @@ int vcdb_builder_add_index(
     vcdb_builder_t* builder,
     vcdb_index_t* index)
 {
+    MODEL_ASSERT(NULL != builder);
+    MODEL_ASSERT(NULL != index);
+
+    /* parameter sanity check. */
+    if (NULL == builder || NULL == index)
+    {
+        return VCDB_ERROR_INVALID_PARAMETER;
+    }
+
+    /* set the correlation ID to the next entry. */
+    index->correlation_id = builder->instance_array_size;
+
     return vcdb_builder_add_generic(builder, index,
         VCDB_BUILDER_INSTANCE_TYPE_INDEX);
 }

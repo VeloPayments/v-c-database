@@ -32,6 +32,8 @@ TEST(builder_add_index, add_index)
 
     /* The builder has no entries in its instance array. */
     ASSERT_EQ(0U, builder.instance_array_size);
+    /* force the index correlation id to some weird value. */
+    index.correlation_id = 17;
 
     /* We can add the index to the builder. */
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
@@ -44,6 +46,8 @@ TEST(builder_add_index, add_index)
         builder.instance_array[0].instance_type);
     /* the instance points to our index. */
     EXPECT_EQ(&index, builder.instance_array[0].instance.index);
+    /* the corelation ID is set appropriately. */
+    EXPECT_EQ(0, index.correlation_id);
     /* the handle is null. */
     EXPECT_EQ(nullptr, builder.instance_array[0].handle);
 

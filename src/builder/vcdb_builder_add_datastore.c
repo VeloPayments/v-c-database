@@ -30,6 +30,18 @@ int vcdb_builder_add_datastore(
     vcdb_builder_t* builder,
     vcdb_datastore_t* datastore)
 {
+    MODEL_ASSERT(NULL != builder);
+    MODEL_ASSERT(NULL != datastore);
+
+    /* parameter sanity check. */
+    if (NULL == builder || NULL == datastore)
+    {
+        return VCDB_ERROR_INVALID_PARAMETER;
+    }
+
+    /* set the correlation ID to the next entry. */
+    datastore->correlation_id = builder->instance_array_size;
+
     return vcdb_builder_add_generic(builder, datastore,
         VCDB_BUILDER_INSTANCE_TYPE_DATASTORE);
 }

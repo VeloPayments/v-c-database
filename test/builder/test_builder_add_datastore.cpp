@@ -32,6 +32,8 @@ TEST(builder_add_datastore, add_datastore)
 
     /* The builder has no entries in its instance array. */
     ASSERT_EQ(0U, builder.instance_array_size);
+    /* force the datastore correlation id to some weird value. */
+    datastore.correlation_id = 11;
 
     /* We can add the datastore to the builder. */
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
@@ -44,6 +46,8 @@ TEST(builder_add_datastore, add_datastore)
         builder.instance_array[0].instance_type);
     /* the instance points to our datastore. */
     EXPECT_EQ(&datastore, builder.instance_array[0].instance.datastore);
+    /* the correlation ID is set appropriately. */
+    EXPECT_EQ(0, datastore.correlation_id);
     /* the handle is null. */
     EXPECT_EQ(nullptr, builder.instance_array[0].handle);
 
