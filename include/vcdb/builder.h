@@ -35,6 +35,24 @@ extern "C" {
 #define DEFAULT_INSTANCE_SIZE 20
 
 /**
+ * \brief The instance type for a stored datastore / index instance.
+ */
+typedef enum vcdb_builder_instance_type
+{
+    /**
+     * \brief A datastore instance type.
+     */
+    VCDB_BUILDER_INSTANCE_TYPE_DATASTORE,
+
+    /**
+     * \brief A secondary index instance type.
+     */
+    VCDB_BUILDER_INSTANCE_TYPE_INDEX
+
+} vcdb_builder_instance_type_t;
+
+
+/**
  * \brief This structure contains data about a datastore instance.
  *
  * The \ref instance value provides a type safe way to represent either
@@ -63,21 +81,9 @@ typedef struct vcdb_builder_datastore_instance
     } instance;
 
     /**
-     * \brief The instance type.
+     * \brief The type of this instance.
      */
-    enum
-    {
-        /**
-         * \brief A datastore instance type.
-         */
-        VCDB_BUILDER_DATASTORE_TYPE_DATASTORE,
-
-        /**
-         * \brief A secondary index instance type.
-         */
-        VCDB_BUILDER_DATASTORE_TYPE_INDEX
-
-    } instance_type;
+    vcdb_builder_instance_type_t instance_type;
 
     /**
      * \brief The handle to the external database object.
