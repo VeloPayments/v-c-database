@@ -34,6 +34,17 @@ extern "C" {
 #define VCDB_ERROR_INVALID_PARAMETER 0x4001
 
 /**
+ * \brief The database engine was not found.
+ */
+#define VCDB_ERROR_MISSING_DATABASE_ENGINE 0x4002
+
+/**
+ * \brief There was a bad memory allocation when attempting to perform a
+ * database operation.
+ */
+#define VCDB_ERROR_BAD_MEMORY_ALLOCATION 0x4003
+
+/**
  * @}
  */
 
