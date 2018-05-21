@@ -9,8 +9,7 @@
 #include <gtest/gtest.h>
 #include <vcdb/builder.h>
 
-/* forward decls */
-static void register_test_database();
+#include "test_database.h"
 
 /**
  * Test that the init method returns an error indicating that the given engine
@@ -63,20 +62,4 @@ TEST(builder_init, init_bad_parameters)
     /* Init should fail on a bad connection string parameter. */
     ASSERT_NE(VCDB_STATUS_SUCCESS,
         vcdb_builder_init(&builder, "TESTDB", NULL));
-}
-
-/* internal data for registering a database instance. */
-static bool test_database_registered = false;
-static vcdb_database_engine_t test_database_engine = {};
-
-/**
- * \brief Register the test database.
- */
-static void register_test_database()
-{
-    if (!test_database_registered)
-    {
-        vcdb_database_engine_register(&test_database_engine, "TESTDB");
-        test_database_registered = true;
-    }
 }
