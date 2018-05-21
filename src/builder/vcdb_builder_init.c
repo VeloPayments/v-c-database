@@ -101,7 +101,6 @@ static void vcdb_builder_dispose(void* disposable)
     MODEL_ASSERT(NULL != builder);
     MODEL_ASSERT(NULL != builder->connection_string);
     MODEL_ASSERT(NULL != builder->instance_array);
-    MODEL_ASSERT(0 <= builder->instance_array_size);
     MODEL_ASSERT(!builder->database_opened);
 
     /* clean up the connection string. */
@@ -113,7 +112,7 @@ static void vcdb_builder_dispose(void* disposable)
         /* both datastore and index HAS-A disposable_t as a first member, so
          * this cast is safe.
          */
-        dispose((disposable_t*)&builder->instance_array[i].instance);
+        dispose((disposable_t*)builder->instance_array[i].instance.datastore);
     }
 
     /* clean up the instance array. */
