@@ -39,10 +39,10 @@ the database.  This interface provides three methods:
 `vcdb_builder_database_destroy`.  These methods create, open, and destroy the
 associated database accordingly.
 
-Handle interface
-----------------
+Database interface
+------------------
 
-The `vcdb_handle_t` interface provides a mechanism for translating actions on
+The `vcdb_database_t` interface provides a mechanism for translating actions on
 the database to specific commands.  The handle interface is used to maintain
 state with the underlying database.  It also provides a means to query
 datastores and secondary indices outside of a transaction (i.e. in read-only

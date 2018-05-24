@@ -20,12 +20,136 @@ extern "C" {
 
 #include <stdlib.h>
 
+/* forward declarations for structures. */
+struct vcdb_builder;
+struct vcdb_database;
+struct vcdb_datastore;
+struct vcdb_index;
+
+/**
+ * \brief Database engine method for creating a database.
+ *
+ * \param database      The database to create.
+ * \param builder       The builder from which the database is created.
+ *
+ * \returns A status code signifying success or failure.
+ *          * VCDB_STATUS_SUCCESS on success.
+ *          * a non-zero failure code on failure.
+ */
+typedef int (*vcdb_database_engine_database_create_t)(
+    struct vcdb_database* database,
+    struct vcdb_builder* builder);
+
+/**
+ * \brief Database engine method for opening a database.
+ *
+ * \param database  The database instance to open.
+ * \param builder   The builder to use to open this database.
+ *
+ * \returns A status code signifying success or failure.
+ *          * VCDB_STATUS_SUCCESS on success.
+ *          * a non-zero failure code on failure.
+ */
+typedef int (*vcdb_database_engine_database_open_t)(
+    struct vcdb_database* database,
+    struct vcdb_builder* builder);
+
+/**
+ * \brief Database engine method for deleting a database.
+ *
+ * \param builder   The builder to use to delete this database.
+ *
+ * \returns A status code signifying success or failure.
+ *          * VCDB_STATUS_SUCCESS on success.
+ *          * a non-zero failure code on failure.
+ */
+typedef int (*vcdb_database_engine_database_delete_t)(
+    struct vcdb_builder* builder);
+
+/**
+ * \brief Database engine method for getting a value from a datastore.
+ *
+ * \param database      The database instance to use.
+ * \param datastore     The datastore to get the value from.
+ * \param key           The key to use for the query.
+ * \param key_size      The size of the key.
+ * \param value         The value to read.
+ * \param value_size    The size pointer.  Must be set to the maximum size of
+ *                      the value buffer.  On success, this pointer is updated
+ *                      to the size of the data read.
+ *
+ * \returns A status code signifying success or failure.
+ *          - VCDB_STATUS_SUCCESS on success.
+ *          - VCDB_ERROR_VALUE_NOT_FOUND if the value is not in the datastore.
+ *          - VCDB_ERROR_WOULD_TRUNCATE if the value_size is too small.
+ *          - a non-zero failure code on failure.
+ */
+typedef int (*vcdb_database_engine_datastore_get_t)(
+    struct vcdb_database* database,
+    struct vcdb_datastore* datastore,
+    void* key,
+    size_t key_size,
+    void* value,
+    size_t* value_size);
+
+/**
+ * \brief Database engine method for getting a value from a secondary index.
+ *
+ * \param database      The database instance to use.
+ * \param index         The secondary index to use when getting the value.
+ * \param key           The key to use for the query.
+ * \param key_size      The size of the key.
+ * \param value         The value to read.
+ * \param value_size    The size pointer.  Must be set to the maximum size of
+ *                      the value buffer.  On success, this pointer is updated
+ *                      to the size of the data read.
+ *
+ * \returns A status code signifying success or failure.
+ *          - VCDB_STATUS_SUCCESS on success.
+ *          - VCDB_ERROR_VALUE_NOT_FOUND if the value is not in the
+ *            index/datastore.
+ *          - VCDB_ERROR_WOULD_TRUNCATE if the value_size is too small.
+ *          - a non-zero failure code on failure.
+ */
+typedef int (*vcdb_database_engine_index_get_t)(
+    struct vcdb_database* database,
+    struct vcdb_index* index,
+    void* key,
+    size_t key_size,
+    void* value,
+    size_t* value_size);
+
 /**
  * \brief The database engine structure provides function pointers and context
  * information for a database engine implementation.
  */
 typedef struct vcdb_database_engine
 {
+    /**
+     * \brief Database engine method for creating a database.
+     */
+    vcdb_database_engine_database_create_t database_create;
+
+    /**
+     * \brief Database engine method for opening a database.
+     */
+    vcdb_database_engine_database_open_t database_open;
+
+    /**
+     * \brief Database engine method for deleting a database.
+     */
+    vcdb_database_engine_database_delete_t database_delete;
+
+    /**
+     * \brief Database engine method for getting a value from a datastore.
+     */
+    vcdb_database_engine_datastore_get_t datastore_get;
+
+    /**
+     * \brief Database engine method for getting a value from a secondary index.
+     */
+    vcdb_database_engine_index_get_t index_get;
+
 } vcdb_database_engine_t;
 
 /**
