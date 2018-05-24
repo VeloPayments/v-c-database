@@ -9,7 +9,7 @@
 #include <gtest/gtest.h>
 #include <vcdb/builder.h>
 
-#include "test_database.h"
+#include "../test_database.h"
 
 /**
  * Test that the init method returns an error indicating that the given engine

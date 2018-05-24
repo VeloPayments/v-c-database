@@ -9,7 +9,7 @@
 #include <gtest/gtest.h>
 #include <vcdb/builder.h>
 
-#include "test_database.h"
+#include "../test_database.h"
 
 /* forward decls */
 static int test_index_init(vcdb_index_t*);

@@ -9,7 +9,7 @@
 #include <gtest/gtest.h>
 #include <vcdb/builder.h>
 
-#include "test_database.h"
+#include "../test_database.h"
 
 /* forward decls */
 static int test_datastore_init(vcdb_datastore_t*);
