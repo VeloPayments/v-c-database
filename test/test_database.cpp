@@ -6,7 +6,12 @@
  * \copyright 2018 Velo Payments, Inc.  All rights reserved.
  */
 
+#include <vpr/parameters.h>
+
 #include "test_database.h"
+
+/* forward decls */
+static void test_database_dispose(void* disposable);
 
 /* internal data for registering a database instance. */
 static bool test_database_registered = false;
@@ -60,6 +65,11 @@ int test_database_create(
     test_database_create_param_database = database;
     test_database_create_param_builder = builder;
 
+    if (NULL != database)
+    {
+        database->hdr.dispose = &test_database_dispose;
+    }
+
     return test_database_create_retval;
 }
 
@@ -100,6 +110,11 @@ int test_database_open(
     test_database_open_called = true;
     test_database_open_param_database = database;
     test_database_open_param_builder = builder;
+
+    if (NULL != database)
+    {
+        database->hdr.dispose = &test_database_dispose;
+    }
 
     return test_database_open_retval;
 }
@@ -311,3 +326,10 @@ void* test_index_get_param_value;
  * \brief The value_size parameter passed to test_index_get().
  */
 size_t* test_index_get_param_value_size;
+
+/**
+ * \brief Dispose of the test database (do nothing).
+ */
+static void test_database_dispose(void* UNUSED(disposable))
+{
+}
