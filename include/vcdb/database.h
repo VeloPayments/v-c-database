@@ -18,9 +18,23 @@
 extern "C" {
 #endif  //__cplusplus
 
+/**
+ * \brief The database interface is used to perform operations on the database.
+ *
+ * With this interface, it is possible to create and open databases described by
+ * a builder and get a read-only view to these databases.
+ */
 typedef struct vcdb_database
 {
+    /**
+     * \brief This structure is disposable.
+     */
     disposable_t hdr;
+
+    /**
+     * \brief Weak reference to the builder, used for engine-specific
+     * operations.
+     */
     vcdb_builder_t* builder;
 } vcdb_database_t;
 
