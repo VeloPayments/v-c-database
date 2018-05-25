@@ -103,6 +103,7 @@ int vcdb_database_datastore_get(
         }
     }
 
+    /* convert the serialized data back to the raw value. */
     retval = datastore->value_reader(buffer, buffer_size, value);
 
 cleanup_allocation:
