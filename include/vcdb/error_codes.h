@@ -45,6 +45,11 @@ extern "C" {
 #define VCDB_ERROR_BAD_MEMORY_ALLOCATION 0x4003
 
 /**
+ * \brief The operation would truncate the data, so it was stopped.
+ */
+#define VCDB_ERROR_WOULD_TRUNCATE 0x4004
+
+/**
  * @}
  */
 
