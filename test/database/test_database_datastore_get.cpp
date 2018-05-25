@@ -18,11 +18,11 @@ static int test_value_reader(const void* input, size_t size, void* value);
 static int test_value_writer(const void* value, void* output, size_t* size);
 
 /* method call accessors for test_value_reader */
-bool test_value_reader_called;
-const void* test_value_reader_param_input;
-size_t test_value_reader_param_size;
-void* test_value_reader_param_value;
-int test_value_reader_retval;
+static bool test_value_reader_called;
+static const void* test_value_reader_param_input;
+static size_t test_value_reader_param_size;
+static void* test_value_reader_param_value;
+static int test_value_reader_retval;
 
 /**
  * Test that the datastore_get method calls the appropriate engine methods.
