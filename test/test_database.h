@@ -90,6 +90,24 @@ extern vcdb_database_t* test_database_open_param_database;
 extern vcdb_builder_t* test_database_open_param_builder;
 
 /**
+ * \brief Database engine method for closing a database.
+ *
+ * \param database  The database instance to close.
+ */
+void test_database_close(
+    struct vcdb_database* database);
+
+/**
+ * \brief Flag to indicate whether test_database_close() was called.
+ */
+extern bool test_database_close_called;
+
+/**
+ * \brief The database parameter passed to test_database_close().
+ */
+extern vcdb_database_t* test_database_close_param_database;
+
+/**
  * \brief Database engine method for deleting a database.
  *
  * \param builder   The builder to use to delete this database.

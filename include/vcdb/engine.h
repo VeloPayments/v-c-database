@@ -55,6 +55,14 @@ typedef int (*vcdb_database_engine_database_open_t)(
     struct vcdb_builder* builder);
 
 /**
+ * \brief Database engine method for closing a database.
+ *
+ * \param database  The database instance to close.
+ */
+typedef void (*vcdb_database_engine_database_close_t)(
+    struct vcdb_database* database);
+
+/**
  * \brief Database engine method for deleting a database.
  *
  * \param builder   The builder to use to delete this database.
@@ -134,6 +142,11 @@ typedef struct vcdb_database_engine
      * \brief Database engine method for opening a database.
      */
     vcdb_database_engine_database_open_t database_open;
+
+    /**
+     * \brief Database engine method for closing a database.
+     */
+    vcdb_database_engine_database_close_t database_close;
 
     /**
      * \brief Database engine method for deleting a database.

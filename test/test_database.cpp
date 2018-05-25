@@ -10,14 +10,12 @@
 
 #include "test_database.h"
 
-/* forward decls */
-static void test_database_dispose(void* disposable);
-
 /* internal data for registering a database instance. */
 static bool test_database_registered = false;
 static vcdb_database_engine_t test_database_engine = {
     &test_database_create,
     &test_database_open,
+    &test_database_close,
     &test_database_delete,
     &test_datastore_get,
     &test_index_get
@@ -39,6 +37,7 @@ void register_test_database()
     test_database_create_retval = VCDB_STATUS_SUCCESS;
     test_database_open_called = false;
     test_database_open_retval = VCDB_STATUS_SUCCESS;
+    test_database_close_called = false;
     test_database_delete_called = false;
     test_database_delete_retval = VCDB_STATUS_SUCCESS;
     test_datastore_get_called = false;
@@ -64,11 +63,6 @@ int test_database_create(
     test_database_create_called = true;
     test_database_create_param_database = database;
     test_database_create_param_builder = builder;
-
-    if (NULL != database)
-    {
-        database->hdr.dispose = &test_database_dispose;
-    }
 
     return test_database_create_retval;
 }
@@ -111,11 +105,6 @@ int test_database_open(
     test_database_open_param_database = database;
     test_database_open_param_builder = builder;
 
-    if (NULL != database)
-    {
-        database->hdr.dispose = &test_database_dispose;
-    }
-
     return test_database_open_retval;
 }
 
@@ -138,6 +127,28 @@ vcdb_database_t* test_database_open_param_database;
  * \brief The builder parameter passed to test_database_open().
  */
 vcdb_builder_t* test_database_open_param_builder;
+
+/**
+ * \brief Database engine method for closing a database.
+ *
+ * \param database  The database instance to close.
+ */
+void test_database_close(
+    struct vcdb_database* database)
+{
+    test_database_close_called = true;
+    test_database_close_param_database = database;
+}
+
+/**
+ * \brief Flag to indicate whether test_database_close() was called.
+ */
+bool test_database_close_called;
+
+/**
+ * \brief The database parameter passed to test_database_close().
+ */
+vcdb_database_t* test_database_close_param_database;
 
 /**
  * \brief Database engine method for deleting a database.
@@ -326,10 +337,3 @@ void* test_index_get_param_value;
  * \brief The value_size parameter passed to test_index_get().
  */
 size_t* test_index_get_param_value_size;
-
-/**
- * \brief Dispose of the test database (do nothing).
- */
-static void test_database_dispose(void* UNUSED(disposable))
-{
-}

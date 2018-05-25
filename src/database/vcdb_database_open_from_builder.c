@@ -10,6 +10,8 @@
 #include <vcdb/database.h>
 #include <vpr/parameters.h>
 
+#include "database_private.h"
+
 /**
  * \brief Open a database from the given builder.
  *
@@ -41,10 +43,12 @@ int vcdb_database_open_from_builder(
     /* open the database using the engine-specific open method. */
     int retval = builder->engine->database_open(database, builder);
 
-    /* if opening was successful, set the opened flag. */
+    /* if successful, set the opened flag and the builder pointer. */
     if (retval == VCDB_STATUS_SUCCESS)
     {
         builder->database_opened = true;
+        database->hdr.dispose = &vcdb_database_dispose;
+        database->builder = builder;
     }
 
     return retval;

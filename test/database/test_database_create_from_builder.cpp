@@ -46,6 +46,8 @@ TEST(database_create_from_builder, init)
 
     /* the opened flag is set in the builder. */
     EXPECT_TRUE(builder.database_opened);
+    /* the builder is set in the database structure. */
+    EXPECT_EQ(&builder, database.builder);
 
     /* clean up. */
     dispose((disposable_t*)&database);
@@ -122,6 +124,5 @@ TEST(database_create_from_builder, engine_error)
     EXPECT_FALSE(builder.database_opened);
 
     /* clean up. */
-    dispose((disposable_t*)&database);
     dispose((disposable_t*)&builder);
 }
