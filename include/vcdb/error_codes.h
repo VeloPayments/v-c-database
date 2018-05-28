@@ -50,6 +50,11 @@ extern "C" {
 #define VCDB_ERROR_WOULD_TRUNCATE 0x4004
 
 /**
+ * \brief Misc database engine error.
+ */
+#define VCDB_ERROR_DATABASE_ENGINE 0x4005
+
+/**
  * @}
  */
 
