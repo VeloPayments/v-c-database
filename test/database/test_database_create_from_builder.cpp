@@ -48,6 +48,8 @@ TEST(database_create_from_builder, init)
     EXPECT_TRUE(builder.database_opened);
     /* the builder is set in the database structure. */
     EXPECT_EQ(&builder, database.builder);
+    /* the database engine context is our dummy value. */
+    EXPECT_EQ(&test_database_dummy, database.database_engine_context);
 
     /* clean up. */
     dispose((disposable_t*)&database);

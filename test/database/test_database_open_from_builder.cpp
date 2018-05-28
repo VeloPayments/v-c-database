@@ -43,6 +43,7 @@ TEST(database_open_from_builder, init)
     ASSERT_TRUE(test_database_open_called);
     EXPECT_EQ(&database, test_database_open_param_database);
     EXPECT_EQ(&builder, test_database_open_param_builder);
+    EXPECT_EQ(&test_database_dummy, database.database_engine_context);
 
     /* the opened flag is set in the builder. */
     EXPECT_TRUE(builder.database_opened);

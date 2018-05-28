@@ -16,6 +16,8 @@
 #include <vcdb/datastore.h>
 #include <vcdb/index.h>
 
+extern int test_database_dummy;
+
 /**
  * \brief Register the test database mock.
  */

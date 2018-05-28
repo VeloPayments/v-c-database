@@ -36,6 +36,12 @@ typedef struct vcdb_database
      * operations.
      */
     vcdb_builder_t* builder;
+
+    /**
+     * \brief Opaque pointer to underlying database / database environment.
+     */
+    void* database_engine_context;
+
 } vcdb_database_t;
 
 /**

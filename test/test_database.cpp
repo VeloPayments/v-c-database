@@ -10,6 +10,9 @@
 
 #include "test_database.h"
 
+/* Simple dummy value used as a pointer. */
+int test_database_dummy = 17;
+
 /* internal data for registering a database instance. */
 static bool test_database_registered = false;
 static vcdb_database_engine_t test_database_engine = {
@@ -64,6 +67,8 @@ int test_database_create(
     test_database_create_param_database = database;
     test_database_create_param_builder = builder;
 
+    database->database_engine_context = &test_database_dummy;
+
     return test_database_create_retval;
 }
 
@@ -104,6 +109,8 @@ int test_database_open(
     test_database_open_called = true;
     test_database_open_param_database = database;
     test_database_open_param_builder = builder;
+
+    database->database_engine_context = &test_database_dummy;
 
     return test_database_open_retval;
 }
