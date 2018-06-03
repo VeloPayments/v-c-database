@@ -10,9 +10,7 @@
 #include <vcdb/builder.h>
 
 #include "../test_database.h"
-
-/* forward decls */
-static int test_datastore_init(vcdb_datastore_t*);
+#include "../test_datastore.h"
 
 /**
  * Test that we can add a datastore to the builder.
@@ -79,28 +77,4 @@ TEST(builder_add_datastore, bad_parameter)
 
     dispose((disposable_t*)&builder);
     dispose((disposable_t*)&datastore);
-}
-
-/**
- * Initialize a dummy datastore for testing.
- *
- * \param datastore         The datastore to initialize.
- *
- * \returns a status code indicating success or failure.
- *          - VCDB_STATUS_SUCCESS on success.
- *          - A non-zero status code on failure.
- */
-static int test_datastore_init(vcdb_datastore_t* datastore)
-{
-    const char* NAME = "test_db";
-    size_t SIZE = 128;
-    vcdb_datastore_key_getter_method_t GETTER =
-        (vcdb_datastore_key_getter_method_t)110;
-    vcdb_datastore_value_reader_method_t READER =
-        (vcdb_datastore_value_reader_method_t)220;
-    vcdb_datastore_value_writer_method_t WRITER =
-        (vcdb_datastore_value_writer_method_t)330;
-
-    //init should succeed
-    return vcdb_datastore_init(datastore, NAME, SIZE, GETTER, READER, WRITER);
 }

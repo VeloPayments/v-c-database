@@ -10,19 +10,7 @@
 #include <vcdb/database.h>
 
 #include "../test_database.h"
-
-/* forward decls */
-static int test_datastore_init(vcdb_datastore_t*);
-static void test_key_getter(const void* value, void* key, size_t* key_size);
-static int test_value_reader(const void* input, size_t size, void* value);
-static int test_value_writer(const void* value, void* output, size_t* size);
-
-/* method call accessors for test_value_reader */
-static bool test_value_reader_called;
-static const void* test_value_reader_param_input;
-static size_t test_value_reader_param_size;
-static void* test_value_reader_param_value;
-static int test_value_reader_retval;
+#include "../test_datastore.h"
 
 /**
  * Test that the datastore_get method calls the appropriate engine methods.
@@ -250,46 +238,4 @@ TEST(database_datastore_get, bad_serialization)
     /* clean up */
     dispose((disposable_t*)&database);
     dispose((disposable_t*)&builder);
-}
-
-
-/**
- * Initialize a dummy datastore for testing.
- *
- * \param datastore         The datastore to initialize.
- *
- * \returns a status code indicating success or failure.
- *          - VCDB_STATUS_SUCCESS on success.
- *          - A non-zero status code on failure.
- */
-static int test_datastore_init(vcdb_datastore_t* datastore)
-{
-    const char* NAME = "test_db";
-    size_t SIZE = 128;
-
-    //init should succeed
-    return vcdb_datastore_init(
-        datastore, NAME, SIZE, &test_key_getter, &test_value_reader,
-        &test_value_writer);
-}
-
-static void test_key_getter(const void*, void*, size_t*)
-{
-    //NO-OP
-}
-
-static int test_value_writer(const void*, void*, size_t*)
-{
-    //NO-OP
-    return VCDB_STATUS_SUCCESS;
-}
-
-static int test_value_reader(const void* input, size_t size, void* value)
-{
-    test_value_reader_called = true;
-    test_value_reader_param_input = input;
-    test_value_reader_param_size = size;
-    test_value_reader_param_value = value;
-
-    return test_value_reader_retval;
 }
