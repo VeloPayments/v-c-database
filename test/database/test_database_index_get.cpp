@@ -10,26 +10,8 @@
 #include <vcdb/database.h>
 
 #include "../test_database.h"
-
-/* forward decls */
-static int test_datastore_init(vcdb_datastore_t*);
-static void test_key_getter(const void* value, void* key, size_t* key_size);
-static void test_2nd_key_getter(const void* value, void* key, size_t* key_size);
-static int test_value_reader(const void* input, size_t size, void* value);
-static int test_value_writer(const void* value, void* output, size_t* size);
-
-/* method call accessors for test_value_reader */
-static bool test_value_reader_called;
-static const void* test_value_reader_param_input;
-static size_t test_value_reader_param_size;
-static void* test_value_reader_param_value;
-static int test_value_reader_retval;
-
-/* method call accessors for test_2nd_key_getter */
-static bool test_2nd_key_getter_called;
-static const void* test_2nd_key_getter_param_value;
-static void* test_2nd_key_getter_param_key;
-static size_t* test_2nd_key_getter_param_key_size;
+#include "../test_datastore.h"
+#include "../test_index.h"
 
 /**
  * Test that the index_get method calls the appropriate engine methods.
@@ -44,16 +26,13 @@ TEST(database_index_get, e2e)
     size_t key_size = strlen(key);
     char value[1024];
     size_t value_size = sizeof(value);
-    const char* INDEX_NAME = "test-index";
 
     /* register the test database engine. */
     register_test_database();
 
     /* we should be able to build a test database. */
     ASSERT_EQ(VCDB_STATUS_SUCCESS, test_datastore_init(&datastore));
-    ASSERT_EQ(VCDB_STATUS_SUCCESS,
-        vcdb_index_init(&index, &datastore, INDEX_NAME,
-            &test_2nd_key_getter));
+    ASSERT_EQ(VCDB_STATUS_SUCCESS, test_index_init(&index, &datastore));
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
         vcdb_builder_init(&builder, "TESTDB", "test-dir"));
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
@@ -62,10 +41,12 @@ TEST(database_index_get, e2e)
         vcdb_database_create_from_builder(&database, &builder));
 
     /* preconditions */
+    test_datastore_reset();
+    test_index_reset();
     ASSERT_FALSE(test_index_get_called);
     test_value_reader_called = false;
     test_value_reader_retval = VCDB_STATUS_SUCCESS;
-    test_2nd_key_getter_called = false;
+    test_secondary_key_getter_called = false;
 
     /* call to vcdb_database_index_get should succeed. */
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
@@ -75,7 +56,7 @@ TEST(database_index_get, e2e)
             (void*)value, &value_size));
 
     /* the secondary key method should NOT have been called */
-    EXPECT_FALSE(test_2nd_key_getter_called);
+    EXPECT_FALSE(test_secondary_key_getter_called);
 
     /* the index_get method should have been called */
     EXPECT_TRUE(test_index_get_called);
@@ -111,16 +92,13 @@ TEST(database_index_get, bad_params)
     size_t key_size = strlen(key);
     char value[1024];
     size_t value_size = sizeof(value);
-    const char* INDEX_NAME = "test-index";
 
     /* register the test database engine. */
     register_test_database();
 
     /* we should be able to build a test database. */
     ASSERT_EQ(VCDB_STATUS_SUCCESS, test_datastore_init(&datastore));
-    ASSERT_EQ(VCDB_STATUS_SUCCESS,
-        vcdb_index_init(&index, &datastore, INDEX_NAME,
-            &test_2nd_key_getter));
+    ASSERT_EQ(VCDB_STATUS_SUCCESS, test_index_init(&index, &datastore));
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
         vcdb_builder_init(&builder, "TESTDB", "test-dir"));
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
@@ -129,10 +107,12 @@ TEST(database_index_get, bad_params)
         vcdb_database_create_from_builder(&database, &builder));
 
     /* preconditions */
+    test_datastore_reset();
+    test_index_reset();
     ASSERT_FALSE(test_index_get_called);
     test_value_reader_called = false;
     test_value_reader_retval = VCDB_STATUS_SUCCESS;
-    test_2nd_key_getter_called = false;
+    test_secondary_key_getter_called = false;
 
     /* call to vcdb_database_index_get should fail (bad parameter). */
     ASSERT_EQ(VCDB_ERROR_INVALID_PARAMETER,
@@ -167,7 +147,7 @@ TEST(database_index_get, bad_params)
             (void*)value, NULL));
 
     /* the secondary key method should NOT have been called */
-    EXPECT_FALSE(test_2nd_key_getter_called);
+    EXPECT_FALSE(test_secondary_key_getter_called);
 
     /* the index_get method should NOT have been called */
     EXPECT_FALSE(test_index_get_called);
@@ -194,16 +174,13 @@ TEST(database_index_get, bad_value_size)
     size_t key_size = strlen(key);
     char value[1024];
     size_t value_size = 10;
-    const char* INDEX_NAME = "test-index";
 
     /* register the test database engine. */
     register_test_database();
 
     /* we should be able to build a test database. */
     ASSERT_EQ(VCDB_STATUS_SUCCESS, test_datastore_init(&datastore));
-    ASSERT_EQ(VCDB_STATUS_SUCCESS,
-        vcdb_index_init(&index, &datastore, INDEX_NAME,
-            &test_2nd_key_getter));
+    ASSERT_EQ(VCDB_STATUS_SUCCESS, test_index_init(&index, &datastore));
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
         vcdb_builder_init(&builder, "TESTDB", "test-dir"));
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
@@ -212,10 +189,12 @@ TEST(database_index_get, bad_value_size)
         vcdb_database_create_from_builder(&database, &builder));
 
     /* preconditions */
+    test_datastore_reset();
+    test_index_reset();
     ASSERT_FALSE(test_index_get_called);
     test_value_reader_called = false;
     test_value_reader_retval = VCDB_STATUS_SUCCESS;
-    test_2nd_key_getter_called = false;
+    test_secondary_key_getter_called = false;
 
     /* call to vcdb_database_index_get should fail (bad parameter). */
     ASSERT_EQ(VCDB_ERROR_WOULD_TRUNCATE,
@@ -225,7 +204,7 @@ TEST(database_index_get, bad_value_size)
             (void*)value, &value_size));
 
     /* the secondary key method should NOT have been called */
-    EXPECT_FALSE(test_2nd_key_getter_called);
+    EXPECT_FALSE(test_secondary_key_getter_called);
 
     /* the index_get method should NOT have been called */
     EXPECT_FALSE(test_index_get_called);
@@ -251,16 +230,13 @@ TEST(database_index_get, bad_serialization)
     size_t key_size = strlen(key);
     char value[1024];
     size_t value_size = sizeof(value);
-    const char* INDEX_NAME = "test-index";
 
     /* register the test database engine. */
     register_test_database();
 
     /* we should be able to build a test database. */
     ASSERT_EQ(VCDB_STATUS_SUCCESS, test_datastore_init(&datastore));
-    ASSERT_EQ(VCDB_STATUS_SUCCESS,
-        vcdb_index_init(&index, &datastore, INDEX_NAME,
-            &test_2nd_key_getter));
+    ASSERT_EQ(VCDB_STATUS_SUCCESS, test_index_init(&index, &datastore));
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
         vcdb_builder_init(&builder, "TESTDB", "test-dir"));
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
@@ -269,10 +245,12 @@ TEST(database_index_get, bad_serialization)
         vcdb_database_create_from_builder(&database, &builder));
 
     /* preconditions */
+    test_datastore_reset();
+    test_index_reset();
     ASSERT_FALSE(test_index_get_called);
     test_value_reader_called = false;
     test_value_reader_retval = -12;
-    test_2nd_key_getter_called = false;
+    test_secondary_key_getter_called = false;
 
     /* call to vcdb_database_index_get should fail (bad parameter). */
     ASSERT_EQ(-12,
@@ -282,7 +260,7 @@ TEST(database_index_get, bad_serialization)
             (void*)value, &value_size));
 
     /* the secondary key method should NOT have been called */
-    EXPECT_FALSE(test_2nd_key_getter_called);
+    EXPECT_FALSE(test_secondary_key_getter_called);
 
     /* the index_get method should have been called */
     EXPECT_TRUE(test_index_get_called);
@@ -293,53 +271,4 @@ TEST(database_index_get, bad_serialization)
     /* clean up */
     dispose((disposable_t*)&database);
     dispose((disposable_t*)&builder);
-}
-
-/**
- * Initialize a dummy datastore for testing.
- *
- * \param datastore         The datastore to initialize.
- *
- * \returns a status code indicating success or failure.
- *          - VCDB_STATUS_SUCCESS on success.
- *          - A non-zero status code on failure.
- */
-static int test_datastore_init(vcdb_datastore_t* datastore)
-{
-    const char* NAME = "test_db";
-    size_t SIZE = 128;
-
-    //init should succeed
-    return vcdb_datastore_init(
-        datastore, NAME, SIZE, &test_key_getter, &test_value_reader,
-        &test_value_writer);
-}
-
-static void test_key_getter(const void*, void*, size_t*)
-{
-    //NO-OP
-}
-
-static void test_2nd_key_getter(const void* value, void* key, size_t* key_size)
-{
-    test_2nd_key_getter_called = true;
-    test_2nd_key_getter_param_value = value;
-    test_2nd_key_getter_param_key = key;
-    test_2nd_key_getter_param_key_size = key_size;
-}
-
-static int test_value_writer(const void*, void*, size_t*)
-{
-    //NO-OP
-    return VCDB_STATUS_SUCCESS;
-}
-
-static int test_value_reader(const void* input, size_t size, void* value)
-{
-    test_value_reader_called = true;
-    test_value_reader_param_input = input;
-    test_value_reader_param_size = size;
-    test_value_reader_param_value = value;
-
-    return test_value_reader_retval;
 }

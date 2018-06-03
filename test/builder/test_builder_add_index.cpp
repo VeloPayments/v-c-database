@@ -10,15 +10,14 @@
 #include <vcdb/builder.h>
 
 #include "../test_database.h"
-
-/* forward decls */
-static int test_index_init(vcdb_index_t*);
+#include "../test_index.h"
 
 /**
  * Test that we can add an index to the builder.
  */
 TEST(builder_add_index, add_index)
 {
+    vcdb_datastore_t datastore;
     vcdb_index_t index;
     vcdb_builder_t builder;
 
@@ -26,7 +25,7 @@ TEST(builder_add_index, add_index)
     register_test_database();
 
     /* create the index and builder */
-    ASSERT_EQ(VCDB_STATUS_SUCCESS, test_index_init(&index));
+    ASSERT_EQ(VCDB_STATUS_SUCCESS, test_index_init(&index, &datastore));
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
         vcdb_builder_init(&builder, "TESTDB", "test"));
 
@@ -59,6 +58,7 @@ TEST(builder_add_index, add_index)
  */
 TEST(builder_add_index, bad_parameter)
 {
+    vcdb_datastore_t datastore;
     vcdb_index_t index;
     vcdb_builder_t builder;
 
@@ -66,7 +66,7 @@ TEST(builder_add_index, bad_parameter)
     register_test_database();
 
     /* create the index and builder */
-    ASSERT_EQ(VCDB_STATUS_SUCCESS, test_index_init(&index));
+    ASSERT_EQ(VCDB_STATUS_SUCCESS, test_index_init(&index, &datastore));
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
         vcdb_builder_init(&builder, "TESTDB", "test"));
 
@@ -79,24 +79,4 @@ TEST(builder_add_index, bad_parameter)
 
     dispose((disposable_t*)&builder);
     dispose((disposable_t*)&index);
-}
-
-/**
- * Initialize a dummy index for testing.
- *
- * \param index         The index to initialize.
- *
- * \returns a status code indicating success or failure.
- *          - VCDB_STATUS_SUCCESS on success.
- *          - A non-zero status code on failure.
- */
-static int test_index_init(vcdb_index_t* index)
-{
-    const char* NAME = "test_idx";
-    vcdb_datastore_t* dummy_datastore = (vcdb_datastore_t*)550;
-    vcdb_index_secondary_key_getter_method_t GETTER =
-        (vcdb_datastore_key_getter_method_t)440;
-
-    //init should succeed
-    return vcdb_index_init(index, dummy_datastore, NAME, GETTER);
 }
