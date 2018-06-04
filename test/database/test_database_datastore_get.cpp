@@ -39,8 +39,7 @@ TEST(database_datastore_get, e2e)
 
     /* preconditions */
     ASSERT_FALSE(test_datastore_get_called);
-    test_value_reader_called = false;
-    test_value_reader_retval = VCDB_STATUS_SUCCESS;
+    test_datastore_reset();
 
     /* call to vcdb_database_datastore_get should succeed. */
     ASSERT_EQ(VCDB_STATUS_SUCCESS,
@@ -97,8 +96,7 @@ TEST(database_datastore_get, bad_params)
 
     /* preconditions */
     ASSERT_FALSE(test_datastore_get_called);
-    test_value_reader_called = false;
-    test_value_reader_retval = VCDB_STATUS_SUCCESS;
+    test_datastore_reset();
 
     /* call to vcdb_database_datastore_get should fail (bad parameter). */
     ASSERT_EQ(VCDB_ERROR_INVALID_PARAMETER,
@@ -171,8 +169,7 @@ TEST(database_datastore_get, bad_value_size)
 
     /* preconditions */
     ASSERT_FALSE(test_datastore_get_called);
-    test_value_reader_called = false;
-    test_value_reader_retval = VCDB_STATUS_SUCCESS;
+    test_datastore_reset();
 
     /* call to vcdb_database_datastore_get should fail (would truncate). */
     ASSERT_EQ(VCDB_ERROR_WOULD_TRUNCATE,
@@ -219,7 +216,7 @@ TEST(database_datastore_get, bad_serialization)
 
     /* preconditions */
     ASSERT_FALSE(test_datastore_get_called);
-    test_value_reader_called = false;
+    test_datastore_reset();
     test_value_reader_retval = -15;
 
     /* call to vcdb_database_datastore_get should fail (serialization fail). */
