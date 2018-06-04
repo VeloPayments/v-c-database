@@ -21,6 +21,7 @@ extern "C" {
 #include <stdlib.h>
 
 /* forward declarations for structures. */
+struct vcdb_transaction;
 struct vcdb_builder;
 struct vcdb_database;
 struct vcdb_datastore;
@@ -128,6 +129,100 @@ typedef int (*vcdb_database_engine_index_get_t)(
     size_t* value_size);
 
 /**
+ * \brief Begin a transaction in the given database.
+ *
+ * \param transaction   The transaction instance to create.
+ * \param database      The database to which this transaction belongs.
+ *
+ * \returns A status code signifying success or failure.
+ *          - VCDB_STATUS_SUCCESS on success.
+ *          - a non-zero failure code on failure.
+ */
+typedef int (*vcdb_database_engine_transaction_begin_t)(
+    struct vcdb_transaction* transaction,
+    struct vcdb_database* database);
+
+/**
+ * \brief Commit a transaction.
+ *
+ * \param transaction   The transaction instance to commit.
+ *
+ * \returns A status code signifying success or failure.
+ *          - VCDB_STATUS_SUCCESS on success.
+ *          - a non-zero failure code on failure.
+ */
+typedef int (*vcdb_database_engine_transaction_commit_t)(
+    struct vcdb_transaction* transaction);
+
+/**
+ * \brief Roll back a transaction.
+ *
+ * \param transaction   The transaction instance to roll back.
+ *
+ * \returns A status code signifying success or failure.
+ *          - VCDB_STATUS_SUCCESS on success.
+ *          - a non-zero failure code on failure.
+ */
+typedef int (*vcdb_database_engine_transaction_rollback_t)(
+    struct vcdb_transaction* transaction);
+
+/**
+ * \brief Put a value into the datastore using the given transaction.
+ *
+ * If the value already exists, it will be updated.
+ *
+ * \param transaction   The transaction instance to use.
+ * \param datastore     The datastore to put the value into.
+ * \param value         The value to put.
+ * \param value_size    The size of the value to put.
+ *
+ * \returns A status code signifying success or failure.
+ *          - VCDB_STATUS_SUCCESS on success.
+ *          - a non-zero failure code on failure.
+ */
+typedef int (*vcdb_database_engine_datastore_put_t)(
+    struct vcdb_transaction* transaction,
+    struct vcdb_datastore* datastore,
+    void* value,
+    size_t* value_size);
+
+/**
+ * \brief Delete values matching the given key in the given datastore.
+ *
+ * \param transaction   The transaction instance to use.
+ * \param datastore     The datastore to use when deleting.
+ * \param key           The key to delete.
+ * \param key_size      The size of the key to delete.
+ *
+ * \returns A status code signifying success or failure.
+ *          - VCDB_STATUS_SUCCESS on success.
+ *          - a non-zero failure code on failure.
+ */
+typedef int (*vcdb_database_engine_datastore_delete_t)(
+    struct vcdb_transaction* transaction,
+    struct vcdb_datastore* datastore,
+    void* key,
+    size_t* key_size);
+
+/**
+ * \brief Delete values matching the given key in the given secondary index.
+ *
+ * \param transaction   The transaction instance to use.
+ * \param index         The secondary index to use when deleting.
+ * \param key           The key to delete.
+ * \param key_size      The size of the key to delete.
+ *
+ * \returns A status code signifying success or failure.
+ *          - VCDB_STATUS_SUCCESS on success.
+ *          - a non-zero failure code on failure.
+ */
+typedef int (*vcdb_database_engine_index_delete_t)(
+    struct vcdb_transaction* transaction,
+    struct vcdb_index* index,
+    void* key,
+    size_t* key_size);
+
+/**
  * \brief The database engine structure provides function pointers and context
  * information for a database engine implementation.
  */
@@ -162,6 +257,39 @@ typedef struct vcdb_database_engine
      * \brief Database engine method for getting a value from a secondary index.
      */
     vcdb_database_engine_index_get_t index_get;
+
+    /**
+     * \brief Database engine method for beginning a transaction.
+     */
+    vcdb_database_engine_transaction_begin_t transaction_begin;
+
+    /**
+     * \brief Database engine method for committing a transaction.
+     */
+    vcdb_database_engine_transaction_commit_t transaction_commit;
+
+    /**
+     * \brief Database engine method for rolling back a transaction.
+     */
+    vcdb_database_engine_transaction_rollback_t transaction_rollback;
+
+    /**
+     * \brief Database engine method for putting a value in a datastore under
+     * a transaction.
+     */
+    vcdb_database_engine_datastore_put_t datastore_put;
+
+    /**
+     * \brief Database engine method for deleting a value in a datastore under a
+     * transaction.
+     */
+    vcdb_database_engine_datastore_delete_t datatore_delete;
+
+    /**
+     * \brief Database engine method for deleting keys from an index under a
+     * transaction.
+     */
+    vcdb_database_engine_index_delete_t index_delete;
 
 } vcdb_database_engine_t;
 

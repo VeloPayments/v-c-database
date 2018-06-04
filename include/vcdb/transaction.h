@@ -10,6 +10,7 @@
 #ifndef VCDB_TRANSACTION_HEADER_GUARD
 #define VCDB_TRANSACTION_HEADER_GUARD
 
+#include <stdbool.h>
 #include <vcdb/database.h>
 #include <vpr/disposable.h>
 
@@ -21,6 +22,7 @@ extern "C" {
 typedef struct vcdb_transaction
 {
     disposable_t hdr;
+    bool in_transaction;
     vcdb_database_t* database;
 } vcdb_transaction_t;
 
@@ -73,7 +75,7 @@ int vcdb_transaction_rollback(
     vcdb_transaction_t* transaction);
 
 /**
- * \brief Put a value into the database using the given datastore.
+ * \brief Put a value into the datastore using the given transaction.
  *
  * If the value already exists, it will be updated.
  *
@@ -87,7 +89,7 @@ int vcdb_transaction_rollback(
  *          - a non-zero failure code on failure.
  */
 int vcdb_database_datastore_put(
-    vcdb_database_t* database,
+    vcdb_transaction_t* transaction,
     vcdb_datastore_t* datastore,
     void* value,
     size_t* value_size);
@@ -105,7 +107,7 @@ int vcdb_database_datastore_put(
  *          - a non-zero failure code on failure.
  */
 int vcdb_database_datastore_delete(
-    vcdb_database_t* database,
+    vcdb_transaction_t* transaction,
     vcdb_datastore_t* datastore,
     void* key,
     size_t* key_size);
@@ -123,7 +125,7 @@ int vcdb_database_datastore_delete(
  *          - a non-zero failure code on failure.
  */
 int vcdb_database_index_delete(
-    vcdb_database_t* database,
+    vcdb_transaction_t* transaction,
     vcdb_index_t* index,
     void* key,
     size_t* key_size);
