@@ -283,7 +283,7 @@ typedef struct vcdb_database_engine
      * \brief Database engine method for deleting a value in a datastore under a
      * transaction.
      */
-    vcdb_database_engine_datastore_delete_t datatore_delete;
+    vcdb_database_engine_datastore_delete_t datastore_delete;
 
     /**
      * \brief Database engine method for deleting keys from an index under a
