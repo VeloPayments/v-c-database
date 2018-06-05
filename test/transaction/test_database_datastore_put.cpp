@@ -41,6 +41,7 @@ TEST(datastore_put, happy_path)
         vcdb_transaction_begin(&transaction, &database));
 
     /* preconditions */
+    test_datastore_reset();
     ASSERT_FALSE(test_key_getter_called);
     ASSERT_FALSE(test_datastore_put_called);
 
@@ -64,6 +65,60 @@ TEST(datastore_put, happy_path)
     EXPECT_EQ(&datastore, test_datastore_put_param_datastore);
     EXPECT_NE(nullptr, test_datastore_put_param_value);
     EXPECT_NE(nullptr, test_datastore_put_param_value_size);
+
+    /* cleanup */
+    dispose((disposable_t*)&transaction);
+    dispose((disposable_t*)&database);
+    dispose((disposable_t*)&builder);
+}
+
+/**
+ * Test that using put with a rolled back transaction results in an error.
+ */
+TEST(datastore_put, bad_transaction)
+{
+    vcdb_builder_t builder;
+    vcdb_database_t database;
+    vcdb_datastore_t datastore;
+    vcdb_transaction_t transaction;
+    const char* KEY = "test_key";
+    const char* VALUE = "test_value";
+
+    /* register the test database engine. */
+    register_test_database();
+
+    /* we should be able to build a test database and start a transaction. */
+    ASSERT_EQ(VCDB_STATUS_SUCCESS, test_datastore_init(&datastore));
+    ASSERT_EQ(VCDB_STATUS_SUCCESS,
+        vcdb_builder_init(&builder, "TESTDB", "test-dir"));
+    ASSERT_EQ(VCDB_STATUS_SUCCESS,
+        vcdb_builder_add_datastore(&builder, &datastore));
+    ASSERT_EQ(VCDB_STATUS_SUCCESS,
+        vcdb_database_create_from_builder(&database, &builder));
+    ASSERT_EQ(VCDB_STATUS_SUCCESS,
+        vcdb_transaction_begin(&transaction, &database));
+
+    /* roll back the transaction. */
+    ASSERT_EQ(VCDB_STATUS_SUCCESS, vcdb_transaction_rollback(&transaction));
+
+    /* preconditions */
+    test_datastore_reset();
+    ASSERT_FALSE(test_key_getter_called);
+    ASSERT_FALSE(test_datastore_put_called);
+
+    /* put a value -- this should fail. */
+    test_value_t test_value;
+    memset(&test_value, 0, sizeof(test_value));
+    strcpy(test_value.test_key, KEY);
+    strcpy(test_value.test_value, VALUE);
+    size_t test_value_size = sizeof(test_value);
+    ASSERT_EQ(VCDB_ERROR_BAD_TRANSACTION,
+        vcdb_database_datastore_put(
+            &transaction, &datastore, &test_value, &test_value_size));
+
+    /* postconditions */
+    EXPECT_FALSE(test_key_getter_called);
+    EXPECT_FALSE(test_datastore_put_called);
 
     /* cleanup */
     dispose((disposable_t*)&transaction);

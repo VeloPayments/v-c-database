@@ -49,6 +49,12 @@ int vcdb_database_datastore_put(
         return VCDB_ERROR_INVALID_PARAMETER;
     }
 
+    /* make sure we are in a transaction. */
+    if (!transaction->in_transaction)
+    {
+        return VCDB_ERROR_BAD_TRANSACTION;
+    }
+
     /* get the key from the value. */
     char key[VCDB_MAX_KEY_SIZE];
     size_t key_size = sizeof(key);
