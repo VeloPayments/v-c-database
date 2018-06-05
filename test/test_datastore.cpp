@@ -6,7 +6,11 @@
  * \copyright 2018 Velo Payments, Inc.  All rights reserved.
  */
 
+#include <cassert>
+#include <cstring>
 #include "test_datastore.h"
+
+using namespace std;
 
 /* globals */
 bool test_key_getter_called;
@@ -41,7 +45,7 @@ static int test_value_writer(const void* value, void* output, size_t* size);
 int test_datastore_init(vcdb_datastore_t* datastore)
 {
     const char* NAME = "test_db";
-    size_t SIZE = 128;
+    size_t SIZE = sizeof(test_value);
 
     /* init should succeed */
     return vcdb_datastore_init(
@@ -76,6 +80,10 @@ static void test_key_getter(const void* value, void* key, size_t* key_size)
     test_key_getter_param_value = value;
     test_key_getter_param_key = key;
     test_key_getter_param_key_size = key_size;
+
+    test_value_t* v = (test_value_t*)value;
+    assert(sizeof(v->test_key) < *key_size);
+    memcpy(key, v->test_key, sizeof(v->test_key));
 }
 
 /**

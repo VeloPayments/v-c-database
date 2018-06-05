@@ -18,6 +18,15 @@
 #include <vcdb/index.h>
 
 /**
+ * Data structure used for testing.
+ */
+typedef struct test_value
+{
+    char test_key[40];
+    char test_value[100];
+} test_value_t;
+
+/**
  * Initialize a test datastore with default test values.
  *
  * \param datastore         The datastore to initialize.
