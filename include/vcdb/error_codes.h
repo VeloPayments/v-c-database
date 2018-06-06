@@ -55,9 +55,14 @@ extern "C" {
 #define VCDB_ERROR_BAD_TRANSACTION 0x4005
 
 /**
+ * \brief Database value not found.
+ */
+#define VCDB_ERROR_VALUE_NOT_FOUND 0x4006
+
+/**
  * \brief Misc database engine error.
  */
-#define VCDB_ERROR_DATABASE_ENGINE 0x4006
+#define VCDB_ERROR_DATABASE_ENGINE 0x4106
 
 /**
  * @}
