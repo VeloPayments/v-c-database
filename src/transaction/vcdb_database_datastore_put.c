@@ -103,7 +103,8 @@ int vcdb_database_datastore_put(
     /* Put key and serialized value. */
     retval =
         transaction->database->builder->engine->datastore_put(
-            transaction, datastore, serialized_value, &allocation_size);
+            transaction, datastore, key, &key_size,
+            serialized_value, &allocation_size);
 
 cleanup_serial_buffer:
     free(serialized_value);

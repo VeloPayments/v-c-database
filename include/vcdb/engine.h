@@ -173,6 +173,8 @@ typedef int (*vcdb_database_engine_transaction_rollback_t)(
  *
  * \param transaction   The transaction instance to use.
  * \param datastore     The datastore to put the value into.
+ * \param key           The key to put.
+ * \param key_size      The size of the key to put.
  * \param value         The value to put.
  * \param value_size    The size of the value to put.
  *
@@ -183,6 +185,8 @@ typedef int (*vcdb_database_engine_transaction_rollback_t)(
 typedef int (*vcdb_database_engine_datastore_put_t)(
     struct vcdb_transaction* transaction,
     struct vcdb_datastore* datastore,
+    void* key,
+    size_t* key_size,
     void* value,
     size_t* value_size);
 

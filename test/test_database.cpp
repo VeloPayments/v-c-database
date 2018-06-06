@@ -477,6 +477,8 @@ vcdb_transaction_t* test_transaction_rollback_param_transaction;
  *
  * \param transaction   The transaction instance to use.
  * \param datastore     The datastore to put the value into.
+ * \param key           The key to put.
+ * \param key_size      The size of the key to put.
  * \param value         The value to put.
  * \param value_size    The size of the value to put.
  *
@@ -487,12 +489,16 @@ vcdb_transaction_t* test_transaction_rollback_param_transaction;
 int test_datastore_put(
     struct vcdb_transaction* transaction,
     struct vcdb_datastore* datastore,
+    void* key,
+    size_t* key_size,
     void* value,
     size_t* value_size)
 {
     test_datastore_put_called = true;
     test_datastore_put_param_transaction = transaction;
     test_datastore_put_param_datastore = datastore;
+    test_datastore_put_param_key = key;
+    test_datastore_put_param_key_size = key_size;
     test_datastore_put_param_value = value;
     test_datastore_put_param_value_size = value_size;
 
@@ -518,6 +524,16 @@ vcdb_transaction_t* test_datastore_put_param_transaction;
  * \brief The datastore parameter passed to test_datastore_put().
  */
 vcdb_datastore_t* test_datastore_put_param_datastore;
+
+/**
+ * \brief The key parameter passed to test_datastore_put().
+ */
+void* test_datastore_put_param_key;
+
+/**
+ * \brief The key_size parameter passed to test_datastore_put().
+ */
+size_t* test_datastore_put_param_key_size;
 
 /**
  * \brief The value parameter passed to test_datastore_put().

@@ -63,6 +63,8 @@ TEST(datastore_put, happy_path)
     EXPECT_TRUE(test_datastore_put_called);
     EXPECT_EQ(&transaction, test_datastore_put_param_transaction);
     EXPECT_EQ(&datastore, test_datastore_put_param_datastore);
+    EXPECT_NE(nullptr, test_datastore_put_param_key);
+    EXPECT_NE(nullptr, test_datastore_put_param_key_size);
     EXPECT_NE(nullptr, test_datastore_put_param_value);
     EXPECT_NE(nullptr, test_datastore_put_param_value_size);
 
