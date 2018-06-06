@@ -24,6 +24,7 @@ typedef struct vcdb_transaction
     disposable_t hdr;
     bool in_transaction;
     vcdb_database_t* database;
+    void* transaction_engine_context;
 } vcdb_transaction_t;
 
 /**
