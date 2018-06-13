@@ -60,8 +60,6 @@ TEST(database_datastore_get, e2e)
     /* the serialization reader method should have been called. */
     EXPECT_TRUE(test_value_reader_called);
     EXPECT_EQ(test_datastore_get_param_value, test_value_reader_param_input);
-    EXPECT_EQ(*test_datastore_get_param_value_size,
-        test_value_reader_param_size);
     EXPECT_EQ(value, test_value_reader_param_value);
 
     /* clean up */
